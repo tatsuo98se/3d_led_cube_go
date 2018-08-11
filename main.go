@@ -6,7 +6,6 @@ package main
 */
 import "C"
 import (
-  "github.com/3d_led_cube_go/ledlib/led_canvas"
 )
 
 func main() {
