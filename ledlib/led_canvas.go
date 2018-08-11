@@ -1,4 +1,4 @@
-package led_canvas
+package ledlib
 
 type LedCanvas struct{
 	private
