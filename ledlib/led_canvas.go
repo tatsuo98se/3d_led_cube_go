@@ -1,9 +1,12 @@
 package ledlib
 
 type LedCanvas struct{
-	private
-	name string
+	stop bool
+	Name string
 }
-type private struct{
-	internal string
+
+func NewLedCanvas() *LedCanvas {
+	u := new(LedCanvas)
+	u.Name = "aaa"
+    return u
 }
