@@ -1,7 +1,8 @@
 package ledlib
 
 import (
-	"image"
+	"fmt"
+	"image/color"
 	"image/png"
 	"log"
 	"os"
@@ -9,18 +10,28 @@ import (
 
 type BitmapObj struct {
 	canvas ILedCanvas
-	img    []image.Image
+	imgx   [][][]color.Color
 }
 
 func NewBitmapObj(canvas ILedCanvas, paths []string) *BitmapObj {
-	bmp := BitmapObj{canvas, make([]image.Image, LedDepth, LedDepth)}
+	bmp := BitmapObj{canvas,
+		make([][][]color.Color, LedWidth)}
+
+	for x := range bmp.imgx {
+		bmp.imgx[x] = make([][]color.Color, LedHeight)
+		for y := range bmp.imgx[x] {
+			bmp.imgx[x][y] = make([]color.Color, LedDepth)
+		}
+	}
+
 	bmp.load(paths)
+
 	return &bmp
 }
 
 func (obj *BitmapObj) load(paths []string) {
 
-	for i, path := range paths {
+	for z, path := range paths {
 		if path == "" {
 			continue
 		}
@@ -33,7 +44,15 @@ func (obj *BitmapObj) load(paths []string) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		obj.img[i] = m
+		for x := 0; x < LedWidth; x++ {
+			for y := 0; y < LedHeight; y++ {
+				if m == nil {
+					continue
+				}
+				fmt.Println(x, y, z)
+				obj.imgx[x][y][z] = m.At(x, y)
+			}
+		}
 	}
 }
 
@@ -41,10 +60,10 @@ func (obj *BitmapObj) Draw() {
 	for x := 0; x < LedWidth; x++ {
 		for y := 0; y < LedHeight; y++ {
 			for z := 0; z < LedDepth; z++ {
-				if obj.img[z] == nil {
+				if obj.imgx[x][y][z] == nil {
 					continue
 				}
-				obj.canvas.SetAt(x, y, z, obj.img[z].At(x, y))
+				obj.canvas.SetAt(x, y, z, obj.imgx[x][y][z])
 			}
 		}
 	}
