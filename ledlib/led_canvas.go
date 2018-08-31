@@ -1,7 +1,7 @@
 package ledlib
 
 /*
-#cgo LDFLAGS: -lledLib
+#cgo LDFLAGS: -lledlib
 #include "./../lib/led.h"
 */
 import "C"
