@@ -1,1 +1,3 @@
-cp ./lib/rpi3/ledLibarmv7l.so /usr/local/lib/ledLib.so
+cp ./lib/rpi3/libledlib.so /usr/local/lib/
+ldconfig
+

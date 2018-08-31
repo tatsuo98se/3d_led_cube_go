@@ -24,7 +24,8 @@ func main() {
 	lastUpdate := getUnixNano()
 	led := ledlib.NewLedCanvas()
 	obj := ledlib.NewRocketBitmapObj(led)
-	C.EnableSimulator(true)
+	C.SetUrl(C.CString("192.168.1.12"))
+	C.EnableSimulator(false)
 	for {
 		obj.Draw()
 		led.Show()
