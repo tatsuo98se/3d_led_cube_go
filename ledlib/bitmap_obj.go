@@ -48,7 +48,6 @@ func (obj *BitmapObj) load(paths []string) {
 				if m == nil {
 					continue
 				}
-				fmt.Println(x, y, z)
 				obj.imgx[x][y][z] = NewFromColorColor(m.At(x, y))
 			}
 		}
