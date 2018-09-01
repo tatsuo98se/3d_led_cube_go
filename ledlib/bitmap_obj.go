@@ -2,7 +2,6 @@ package ledlib
 
 import (
 	"fmt"
-	"image/color"
 	"image/png"
 	"log"
 	"os"
@@ -10,17 +9,17 @@ import (
 
 type BitmapObj struct {
 	canvas ILedCanvas
-	imgx   [][][]color.Color
+	imgx   [][][]Color32
 }
 
 func NewBitmapObj(canvas ILedCanvas, paths []string) *BitmapObj {
 	bmp := BitmapObj{canvas,
-		make([][][]color.Color, LedWidth)}
+		make([][][]Color32, LedWidth)}
 
 	for x := range bmp.imgx {
-		bmp.imgx[x] = make([][]color.Color, LedHeight)
+		bmp.imgx[x] = make([][]Color32, LedHeight)
 		for y := range bmp.imgx[x] {
-			bmp.imgx[x][y] = make([]color.Color, LedDepth)
+			bmp.imgx[x][y] = make([]Color32, LedDepth)
 		}
 	}
 
@@ -50,7 +49,7 @@ func (obj *BitmapObj) load(paths []string) {
 					continue
 				}
 				fmt.Println(x, y, z)
-				obj.imgx[x][y][z] = m.At(x, y)
+				obj.imgx[x][y][z] = NewFromColorColor(m.At(x, y))
 			}
 		}
 	}

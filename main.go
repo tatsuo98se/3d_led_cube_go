@@ -10,7 +10,6 @@ import (
 	//  "fmt"
 
 	"fmt"
-	"runtime"
 	"time"
 )
 
@@ -20,7 +19,7 @@ func getUnixNano() int64 {
 }
 
 func main() {
-	runtime.LockOSThread()
+	//	runtime.LockOSThread()
 	lastUpdate := getUnixNano()
 	led := ledlib.NewLedCanvas()
 	obj := ledlib.NewRocketBitmapObj(led)
