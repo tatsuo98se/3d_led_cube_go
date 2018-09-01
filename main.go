@@ -10,8 +10,10 @@ import (
 	//  "fmt"
 
 	"fmt"
-	"runtime"
+//	"runtime"
 	"time"
+	"net/http"
+	_ "net/http/pprof"
 )
 
 func getUnixNano() int64 {
@@ -20,7 +22,10 @@ func getUnixNano() int64 {
 }
 
 func main() {
-	runtime.LockOSThread()
+//	runtime.LockOSThread()
+        go func(){
+		fmt.Println(http.ListenAndServe("localhost:6060",nil))
+	}()
 	lastUpdate := getUnixNano()
 	led := ledlib.NewLedCanvas()
 	obj := ledlib.NewRocketBitmapObj(led)
