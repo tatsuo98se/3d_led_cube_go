@@ -10,7 +10,6 @@ import (
 	//  "fmt"
 
 	"fmt"
-//	"runtime"
 	"time"
 	"net/http"
 	_ "net/http/pprof"
@@ -22,7 +21,6 @@ func getUnixNano() int64 {
 }
 
 func main() {
-//	runtime.LockOSThread()
         go func(){
 		fmt.Println(http.ListenAndServe("localhost:6060",nil))
 	}()

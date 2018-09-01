@@ -17,7 +17,7 @@ const LedDepth = 8
 const LedWidth = 16
 
 type ILedCanvas interface {
-	SetAt(x, y, z int, c color.Color)
+	SetAt(x, y, z int, c Color32)
 	Show()
 }
 
@@ -27,7 +27,7 @@ DummyLedCanvas for test
 type DummyLedCanvas struct {
 }
 
-func (canvas *DummyLedCanvas) SetAt(x, y, z int, c color.Color) {
+func (canvas *DummyLedCanvas) SetAt(x, y, z int, c Color32) {
 }
 
 func (canvas *DummyLedCanvas) Show() {
@@ -36,15 +36,43 @@ func (canvas *DummyLedCanvas) Show() {
 /**
 LedCanvas for real ledcube
 */
+type Color32 interface {
+	Uint32() uint32
+}
+
+type RGB struct {
+	r   uint8
+	g   uint8
+	b   uint8
+	rgb uint32
+}
+
+func (rgb *RGB) Uint32() uint32 {
+	return rgb.rgb
+}
+
+func NewFromColorColor(c color.Color) Color32 {
+	var r, g, b uint8
+	rr, gg, bb, _ := c.RGBA()
+	r = uint8(rr / 0x100)
+	g = uint8(gg / 0x100)
+	b = uint8(bb / 0x100)
+	return &RGB{r, g, b, ToUint32(r, g, b)}
+}
+
+func ToUint32(r, g, b uint8) uint32 {
+	return (uint32(r) << 16) | (uint32(g) << 8) | uint32(b)
+}
+
 type LedCanvas struct {
-	canvas map[string]color.Color
+	canvas map[string]Color32
 }
 
 func NewLedCanvas() ILedCanvas {
-	return &LedCanvas{make(map[string]color.Color)}
+	return &LedCanvas{make(map[string]Color32)}
 }
 
-func (canvas *LedCanvas) SetAt(x, y, z int, c color.Color) {
+func (canvas *LedCanvas) SetAt(x, y, z int, c Color32) {
 	canvas.canvas[fmt.Sprintf("%d:%d:%d", x, y, z)] = c
 
 }
@@ -54,7 +82,7 @@ func (canvas *LedCanvas) Show() {
 		s := strings.Split(k, ":")
 		pt, err := Atois(s)
 		if err == nil {
-			C.SetLed(C.int(pt[0]), C.int(pt[1]), C.int(pt[2]), C.int(ColorToUint32(v)))
+			C.SetLed(C.int(pt[0]), C.int(pt[1]), C.int(pt[2]), C.int(v.Uint32()))
 		}
 	}
 	C.Show()
@@ -70,14 +98,4 @@ func Atois(is []string) ([]int, error) {
 		r[i] = d
 	}
 	return r, nil
-}
-
-func ColorToUint32(c color.Color) uint32 {
-
-	var r, g, b uint32
-	rr, gg, bb, _ := c.RGBA()
-	r = rr / 0x100
-	g = gg / 0x100
-	b = bb / 0x100
-	return (r << 16) | (g << 8) | b
 }
