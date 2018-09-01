@@ -17,6 +17,7 @@ const LedDepth = 8
 const LedWidth = 16
 
 type ILedCanvas interface {
+	PreDraw()
 	SetAt(x, y, z int, c Color32)
 	Show()
 }
@@ -25,6 +26,10 @@ type ILedCanvas interface {
 DummyLedCanvas for test
 */
 type DummyLedCanvas struct {
+}
+
+func (canvas *DummyLedCanvas) PreDraw() {
+
 }
 
 func (canvas *DummyLedCanvas) SetAt(x, y, z int, c Color32) {
@@ -70,6 +75,10 @@ type LedCanvas struct {
 
 func NewLedCanvas() ILedCanvas {
 	return &LedCanvas{make(map[string]Color32)}
+}
+
+func (canvas *LedCanvas) PreDraw() {
+
 }
 
 func (canvas *LedCanvas) SetAt(x, y, z int, c Color32) {
