@@ -8,7 +8,7 @@ import (
 func TestColorToUint32(t *testing.T) {
 
 	data := &color.RGBA{0xff, 0xff, 0xff, 0xff}
-	result := ColorToUint32(data)
+	result := NewFromColorColor(data).Uint32()
 	if result != 0xffffffff {
 		t.Log(data)
 		t.Fatalf("failed test result:%d", result)

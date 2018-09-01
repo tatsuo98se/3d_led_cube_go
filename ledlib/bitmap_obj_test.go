@@ -6,8 +6,7 @@ import (
 
 func TestNewBitmapObj(t *testing.T) {
 
-	canvas := &DummyLedCanvas{}
-	target := NewRocketBitmapObj(canvas)
+	target := NewRocketBitmapObj()
 	if target == nil {
 		t.Fail()
 	}

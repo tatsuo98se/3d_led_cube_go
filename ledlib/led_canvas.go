@@ -6,10 +6,8 @@ package ledlib
 */
 import "C"
 import (
-	"fmt"
 	"image/color"
 	"strconv"
-	"strings"
 )
 
 const LedHeight = 32
@@ -17,9 +15,8 @@ const LedDepth = 8
 const LedWidth = 16
 
 type ILedCanvas interface {
-	PreDraw()
-	SetAt(x, y, z int, c Color32)
-	Show()
+	PreShow()
+	Show(c LedCube)
 }
 
 /**
@@ -28,14 +25,11 @@ DummyLedCanvas for test
 type DummyLedCanvas struct {
 }
 
-func (canvas *DummyLedCanvas) PreDraw() {
+func (canvas *DummyLedCanvas) PreShow() {
 
 }
 
-func (canvas *DummyLedCanvas) SetAt(x, y, z int, c Color32) {
-}
-
-func (canvas *DummyLedCanvas) Show() {
+func (canvas *DummyLedCanvas) Show(c LedCube) {
 }
 
 /**
@@ -43,6 +37,7 @@ LedCanvas for real ledcube
 */
 type Color32 interface {
 	Uint32() uint32
+	IsOff() bool
 }
 
 type RGB struct {
@@ -54,6 +49,13 @@ type RGB struct {
 
 func (rgb *RGB) Uint32() uint32 {
 	return rgb.rgb
+}
+func (rgb *RGB) IsOff() bool {
+	return rgb.rgb == 0
+}
+
+func NewFromRGB(r, g, b uint8) Color32 {
+	return &RGB{r, g, b, ToUint32(r, g, b)}
 }
 
 func NewFromColorColor(c color.Color) Color32 {
@@ -70,30 +72,25 @@ func ToUint32(r, g, b uint8) uint32 {
 }
 
 type LedCanvas struct {
-	canvas map[string]Color32
 }
 
 func NewLedCanvas() ILedCanvas {
-	return &LedCanvas{make(map[string]Color32)}
+	return &LedCanvas{}
 }
 
-func (canvas *LedCanvas) PreDraw() {
-
-}
-
-func (canvas *LedCanvas) SetAt(x, y, z int, c Color32) {
-	canvas.canvas[fmt.Sprintf("%d:%d:%d", x, y, z)] = c
+func (canvas *LedCanvas) PreShow() {
 
 }
 
-func (canvas *LedCanvas) Show() {
-	for k, v := range canvas.canvas {
-		s := strings.Split(k, ":")
-		pt, err := Atois(s)
-		if err == nil {
-			C.SetLed(C.int(pt[0]), C.int(pt[1]), C.int(pt[2]), C.int(v.Uint32()))
+func (canvas *LedCanvas) Show(c LedCube) {
+	EnumXYZ(LedWidth, LedHeight, LedDepth, func(x, y, z int) {
+		px := c.GetAt(x, y, z)
+		if px != nil && !px.IsOff() {
+			C.SetLed(C.int(x), C.int(y), C.int(z), C.int(px.Uint32()))
+		} else {
+			C.SetLed(C.int(x), C.int(y), C.int(z), C.int(0))
 		}
-	}
+	})
 	C.Show()
 }
 

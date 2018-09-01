@@ -2,7 +2,7 @@ package ledlib
 
 import "path/filepath"
 
-func NewRocketBitmapObj(canvas ILedCanvas) *BitmapObj {
+func NewRocketBitmapObj() *BitmapObj {
 	paths := []string{
 		"./asset/image/rocket/rocket1.png",
 		"./asset/image/rocket/rocket2.png",
@@ -20,5 +20,5 @@ func NewRocketBitmapObj(canvas ILedCanvas) *BitmapObj {
 			return nil
 		}
 	}
-	return NewBitmapObj(canvas, paths)
+	return NewBitmapObj(paths)
 }
