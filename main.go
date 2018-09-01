@@ -28,7 +28,7 @@ func main() {
 	lastUpdate := getUnixNano()
 	led := ledlib.NewLedCanvas()
 	filter1 := ledlib.NewLedRollingFilter(led)
-	filter2 := ledlib.NewLedRollingFilter(filter1)
+	filter2 := ledlib.NewLedSkewedFilter(filter1)
 	obj := ledlib.NewRocketBitmapObj()
 	C.SetUrl(C.CString("192.168.1.12"))
 	C.EnableSimulator(false)
