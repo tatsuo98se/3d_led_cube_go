@@ -1,7 +1,6 @@
 package ledlib
 
 import (
-	"fmt"
 	"image/png"
 	"log"
 	"os"
