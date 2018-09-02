@@ -6,3 +6,4 @@ void Clear();
 void Show();
 void Wait(int ms);
 void EnableSimulator(bool isEnable);
+void SetPort(unsigned short port);

@@ -2,16 +2,17 @@ package ledlib
 
 import (
 	"image/png"
+	"ledlib/util"
 	"log"
 	"os"
 )
 
 type BitmapObj struct {
-	cube LedCube
+	cube util.CubeImage
 }
 
 func NewBitmapObj(paths []string) *BitmapObj {
-	bmp := BitmapObj{NewLedCube()}
+	bmp := BitmapObj{NewLedCubeImage()}
 	bmp.load(paths)
 	return &bmp
 }
@@ -36,7 +37,7 @@ func (b *BitmapObj) load(paths []string) {
 				if m == nil {
 					continue
 				}
-				b.cube.SetAt(x, y, z, NewFromColorColor(m.At(x, y)))
+				b.cube.SetAt(x, y, z, util.NewFromColorColor(m.At(x, y)))
 			}
 		}
 	}

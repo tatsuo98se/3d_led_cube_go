@@ -6,22 +6,51 @@ package main
 */
 import "C"
 import (
-	"github.com/tatsuo98se/3d_led_cube_go/ledlib"
-
-	//  "fmt"
-
+	"flag"
 	"fmt"
+	"ledlib"
 	_ "net/http/pprof"
+	"runtime"
+	"strconv"
+	"strings"
 	"time"
 )
 
 func getUnixNano() int64 {
 	return time.Now().UnixNano()
-	//    return int64(time.Millisecond)
 }
 
 func main() {
-	//	runtime.LockOSThread()
+	var (
+		optDestination = flag.String("d", "", "Specify IP and port of Led Cube. if opt is not set, launch simulator.")
+	)
+	flag.Parse()
+	if *optDestination == "" {
+		runtime.LockOSThread()
+		C.EnableSimulator(true)
+	} else {
+		C.EnableSimulator(false)
+		ipAndPort := strings.Split(*optDestination, ":")
+		switch {
+		case len(ipAndPort) == 2:
+			C.SetUrl(C.CString(ipAndPort[0]))
+			port, e := strconv.ParseInt(ipAndPort[1], 10, 16)
+			if e != nil {
+				fmt.Printf("invalid port number. %s", ipAndPort[1])
+				return
+			}
+			C.SetPort(C.ushort(port))
+		case len(ipAndPort) == 1:
+			C.SetUrl(C.CString(*optDestination))
+		case len(ipAndPort) == 0:
+			// do nothing
+		default:
+			fmt.Println("")
+			return
+		}
+
+	}
+	fmt.Println(*optDestination)
 	go func() {
 		//		fmt.Println(http.ListenAndServe("localhost:6060", nil))
 	}()
@@ -30,13 +59,11 @@ func main() {
 	filter1 := ledlib.NewLedRollingFilter(led)
 	filter2 := ledlib.NewLedSkewedFilter(filter1)
 	obj := ledlib.NewRocketBitmapObj()
-	C.SetUrl(C.CString("192.168.1.12"))
-	C.EnableSimulator(false)
+
 	for {
 		filter2.PreShow()
 		obj.Draw(filter2)
 		current := getUnixNano()
-		//		test := ledlib.NewLedCanvas()
 		fmt.Println((current - lastUpdate) / (1000 * 1000))
 		lastUpdate = current
 	}
