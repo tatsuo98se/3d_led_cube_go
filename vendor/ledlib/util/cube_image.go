@@ -4,6 +4,8 @@ import (
 	"sync"
 )
 
+const usingCore = 2
+
 type EnumCubeImageCallback func(x, y, z int, c Color32)
 type CubeImage interface {
 	SetAt(x, y, z int, c Color32)
@@ -102,7 +104,6 @@ func EnumXYZ(x, y, z int, callback EnumXYZCallback) {
 }
 func ConcurrentEnumXYZ(x, y, z int, callback EnumXYZCallback) {
 	var wg sync.WaitGroup
-	usingCore := 2
 	wg.Add(usingCore)
 	xloop := func(xstart, xend int) {
 		defer wg.Done()

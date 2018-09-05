@@ -32,8 +32,9 @@ func (b *BitmapObj) load(paths []string) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		for x := 0; x < m.Bounds().Dx(); x++ {
-			for y := 0; y < m.Bounds().Dy(); y++ {
+		width, height := m.Bounds().Dx(), m.Bounds().Dy()
+		for x := 0; x < width; x++ {
+			for y := 0; y < height; y++ {
 				if m == nil {
 					continue
 				}
