@@ -117,8 +117,12 @@ func ConcurrentEnumXYZ(x, y, z int, callback EnumXYZCallback) {
 	}
 
 	work := x / usingCore
-	for c := 0; c < x; c = c + work {
-		go xloop(c, MaxInt(c+work, x))
+	for c := 0; c < usingCore; c++ {
+		if c == usingCore-1 {
+			go xloop(c*work, x)
+		} else {
+			go xloop(c*work, (c+1)*work)
+		}
 	}
 	wg.Wait()
 }
