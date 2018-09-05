@@ -117,19 +117,15 @@ func (led *ledGoImpl) SetLed(x, y, z int, rgb uint32) {
 		return
 	}
 	index := z*LED_COLOR + y*LED_DEPTH*LED_COLOR + x*LED_HEIGHT*LED_DEPTH*LED_COLOR
-	led.sem <- struct{}{}
 	led.ledBuffer[index+LED_RED] = byte(rgb >> 16)
 	led.ledBuffer[index+LED_GREEN] = byte(rgb >> 8)
 	led.ledBuffer[index+LED_BLUE] = byte(rgb >> 0)
-	<-led.sem
 }
 
 func (led *ledGoImpl) Clear() {
-	led.sem <- struct{}{}
 	for i, _ := range led.ledBuffer {
 		led.ledBuffer[i] = 0
 	}
-	<-led.sem
 }
 
 func (led *ledGoImpl) Show() {
@@ -144,9 +140,7 @@ func (led *ledGoImpl) Show() {
 		return
 	}
 	defer conn.Close()
-	led.sem <- struct{}{}
 	udpBuffer := rgb888toRGB565(led.ledBuffer)
-	<-led.sem
 	conn.Write(udpBuffer)
 }
 
