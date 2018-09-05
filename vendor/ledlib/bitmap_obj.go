@@ -32,8 +32,8 @@ func (b *BitmapObj) load(paths []string) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		for x := 0; x < LedWidth; x++ {
-			for y := 0; y < LedHeight; y++ {
+		for x := 0; x < m.Bounds().Dx(); x++ {
+			for y := 0; y < m.Bounds().Dy(); y++ {
 				if m == nil {
 					continue
 				}

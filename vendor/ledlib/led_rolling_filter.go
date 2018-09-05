@@ -1,7 +1,6 @@
 package ledlib
 
 import (
-	"fmt"
 	"ledlib/util"
 )
 
@@ -23,7 +22,6 @@ func (f *LedRollingFilter) PreShow() {
 	f.canvas.PreShow()
 	if f.timer.IsPast() {
 		f.add = (f.add + 1)
-		fmt.Printf("add:%d\n", f.add)
 	}
 }
 

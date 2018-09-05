@@ -102,7 +102,8 @@ func EnumXYZ(x, y, z int, callback EnumXYZCallback) {
 }
 func ConcurrentEnumXYZ(x, y, z int, callback EnumXYZCallback) {
 	var wg sync.WaitGroup
-	wg.Add(2)
+	usingCore := 2
+	wg.Add(usingCore)
 	xloop := func(xstart, xend int) {
 		defer wg.Done()
 		for xx := xstart; xx < xend; xx++ {
@@ -114,8 +115,9 @@ func ConcurrentEnumXYZ(x, y, z int, callback EnumXYZCallback) {
 		}
 	}
 
-	xhelf := x / 2
-	go xloop(0, xhelf)
-	go xloop(xhelf, x)
+	work := x / usingCore
+	for c := 0; c < x; c = c + work {
+		go xloop(c, MaxInt(c+work, x))
+	}
 	wg.Wait()
 }
