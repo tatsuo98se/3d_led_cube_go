@@ -1,10 +1,5 @@
 package main
 
-/*
-#cgo LDFLAGS: -lledlib
-#include "./lib/led.h"
-*/
-import "C"
 import (
 	"flag"
 	"fmt"
@@ -27,21 +22,21 @@ func main() {
 	flag.Parse()
 	if *optDestination == "" {
 		runtime.LockOSThread()
-		C.EnableSimulator(true)
+		ledlib.GetLed().EnableSimulator(true)
 	} else {
-		C.EnableSimulator(false)
+		ledlib.GetLed().EnableSimulator(false)
 		ipAndPort := strings.Split(*optDestination, ":")
 		switch {
 		case len(ipAndPort) == 2:
-			C.SetUrl(C.CString(ipAndPort[0]))
+			ledlib.GetLed().SetUrl(ipAndPort[0])
 			port, e := strconv.ParseInt(ipAndPort[1], 10, 16)
 			if e != nil {
 				fmt.Printf("invalid port number. %s", ipAndPort[1])
 				return
 			}
-			C.SetPort(C.ushort(port))
+			ledlib.GetLed().SetPort(uint16(port))
 		case len(ipAndPort) == 1:
-			C.SetUrl(C.CString(*optDestination))
+			ledlib.GetLed().SetUrl(*optDestination)
 		case len(ipAndPort) == 0:
 			// do nothing
 		default:

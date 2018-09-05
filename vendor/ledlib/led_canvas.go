@@ -1,10 +1,5 @@
 package ledlib
 
-/*
-#cgo LDFLAGS: -lledlib
-#include "./../../lib/led.h"
-*/
-import "C"
 import (
 	"ledlib/util"
 	"strconv"
@@ -44,15 +39,15 @@ func (canvas *LedCanvas) PreShow() {
 }
 
 func (canvas *LedCanvas) Show(c util.CubeImage) {
-	util.EnumXYZ(LedWidth, LedHeight, LedDepth, func(x, y, z int) {
+	util.ConcurrentEnumXYZ(LedWidth, LedHeight, LedDepth, func(x, y, z int) {
 		px := c.GetAt(x, y, z)
 		if px != nil && !px.IsOff() {
-			C.SetLed(C.int(x), C.int(y), C.int(z), C.int(px.Uint32()))
+			GetLed().SetLed(x, y, z, px.Uint32())
 		} else {
-			C.SetLed(C.int(x), C.int(y), C.int(z), C.int(0))
+			GetLed().SetLed(x, y, z, 0)
 		}
 	})
-	C.Show()
+	GetLed().Show()
 }
 
 func Atois(is []string) ([]int, error) {
