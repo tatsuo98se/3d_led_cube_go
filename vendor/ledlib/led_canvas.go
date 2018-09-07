@@ -5,10 +5,6 @@ import (
 	"strconv"
 )
 
-const LedHeight = 32
-const LedDepth = 8
-const LedWidth = 16
-
 type ILedCanvas interface {
 	PreShow()
 	Show(c util.CubeImage)
