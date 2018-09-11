@@ -49,17 +49,24 @@ func main() {
 	go func() {
 		//		fmt.Println(http.ListenAndServe("localhost:6060", nil))
 	}()
-	lastUpdate := getUnixNano()
-	led := ledlib.NewLedCanvas()
-	filter1 := ledlib.NewLedRollingFilter(led)
-	filter2 := ledlib.NewLedSkewedFilter(filter1)
-	obj := ledlib.NewRocketBitmapObj()
 
-	for {
-		filter2.PreShow()
-		obj.Draw(filter2)
-		current := getUnixNano()
-		fmt.Println((current - lastUpdate) / (1000 * 1000))
-		lastUpdate = current
-	}
+	/*
+		lastUpdate := getUnixNano()
+			led := ledlib.NewLedCanvas()
+			filter1 := ledlib.NewLedRollingFilter(led)
+			filter2 := ledlib.NewLedSkewedFilter(filter1)
+			obj := ledlib.NewRocketBitmapObj()
+
+			for {
+				filter2.PreShow()
+				obj.Draw(filter2)
+				current := getUnixNano()
+				fmt.Println((current - lastUpdate) / (1000 * 1000))
+				lastUpdate = current
+			}*/
+	renderer := ledlib.NewLedBlockRenderer()
+	renderer.Start()
+	renderer.Show(map[string]interface{}{"id": "test"})
+	time.Sleep(3 * time.Second)
+	renderer.Terminate()
 }

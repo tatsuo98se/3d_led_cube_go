@@ -1,6 +1,9 @@
 package ledlib
 
-import "path/filepath"
+import (
+	"go/build"
+	"path/filepath"
+)
 
 func NewRocketBitmapObj() *BitmapObj {
 	paths := []string{
@@ -13,12 +16,9 @@ func NewRocketBitmapObj() *BitmapObj {
 		"./asset/image/rocket/rocket2.png",
 		"./asset/image/rocket/rocket1.png",
 	}
+	programPath := "src/github.com/tatsuo98se/3d_led_cube_go/"
 	for i, _ := range paths {
-		var err error
-		paths[i], err = filepath.Abs(paths[i])
-		if err != nil {
-			return nil
-		}
+		paths[i] = filepath.Join(build.Default.GOPATH, programPath, paths[i])
 	}
 	return NewBitmapObj(paths)
 }
