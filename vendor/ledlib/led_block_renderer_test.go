@@ -7,33 +7,33 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGetParam1(t *testing.T) {
+func TestGetJSONValue1(t *testing.T) {
 	rawOrder := `{"id":"test"}`
 	var order interface{}
 	json.Unmarshal([]byte(rawOrder), &order)
 
-	actual, err := getParam(order, "id", nil)
+	actual, err := GetJSONValueOrDefault(order, "id", nil)
 	assert.Nil(t, err)
 	assert.Equal(t, "test", actual.(string))
 
 }
 
-func TestGetParamErrorCase1(t *testing.T) {
+func TestGetJSONValueErrorCase1(t *testing.T) {
 	rawOrder := `{"id":"test"}`
 	var order interface{}
 	json.Unmarshal([]byte(rawOrder), &order)
 
-	actual, err := getParam(order, "key", "default")
+	actual, err := GetJSONValueOrDefault(order, "key", "default")
 	assert.NotNil(t, err)
 	assert.Equal(t, "default", actual.(string))
 }
 
-func TestGetParamErrorCase2(t *testing.T) {
+func TestGetJSONValueErrorCase2(t *testing.T) {
 	rawOrder := `aaaaa`
 	var order interface{}
 	json.Unmarshal([]byte(rawOrder), &order)
 
-	actual, err := getParam(order, "key", "default")
+	actual, err := GetJSONValueOrDefault(order, "key", "default")
 	assert.NotNil(t, err)
 	assert.Equal(t, "default", actual.(string))
 }
@@ -128,7 +128,7 @@ func testFlatternOrder(t *testing.T, orders string, expectIDs []string) {
 	assert.Len(t, flattenOrders, len(expectIDs))
 
 	for i, expectID := range expectIDs {
-		actual, _ := getParam(flattenOrders[i], "id", nil)
+		actual, _ := GetJSONValueOrDefault(flattenOrders[i], "id", nil)
 		assert.Equal(t, actual.(string), expectID)
 	}
 }
@@ -180,4 +180,52 @@ func TestFlattenOrders7(t *testing.T) {
 	orders := `{"orders":[{"id":"ctrl-loop"},{"id":"test"}]}`
 	expectIDs := []string{"test", "test", "test"}
 	testFlatternOrder(t, orders, expectIDs)
+}
+
+func TestGetFilterAndObject1(t *testing.T) {
+	orders := `{"orders":[{"id":"filter-skewed"},{"id":"filter-rolling"},{"id":"object-rocket", "lifetime":11}]}`
+	arrayOrders, _ := getOrdersFromJson(orders)
+	flattenOrders, _ := flattenOrders(arrayOrders)
+
+	object, filters, lifetime, newOrders, err := GetFilterAndObject(flattenOrders, nil)
+	assert.Nil(t, err)
+	assert.NotNil(t, object)
+	assert.NotNil(t, filters)
+	assert.Equal(t, 0, len(newOrders))
+	assert.Equal(t, 11.0, lifetime)
+
+}
+
+func TestGetFilterAndObject2(t *testing.T) {
+	orders := `{"orders":[{"id":"filter-skewed"},{"id":"filter-rolling"},{"id":"object-rocket", "lifetime":11},{"id":"filter-skewed"},{"id":"filter-rolling"},{"id":"object-rocket", "lifetime":11}]}`
+	arrayOrders, _ := getOrdersFromJson(orders)
+	flattenOrders, _ := flattenOrders(arrayOrders)
+
+	object, filters, lifetime, newOrders, err := GetFilterAndObject(flattenOrders, nil)
+	assert.Nil(t, err)
+	assert.NotNil(t, object)
+	assert.NotNil(t, filters)
+	assert.Equal(t, 3, len(newOrders))
+	assert.Equal(t, 11.0, lifetime)
+
+	object, filters, lifetime, newOrders, err = GetFilterAndObject(flattenOrders, nil)
+	assert.Nil(t, err)
+	assert.NotNil(t, object)
+	assert.NotNil(t, filters)
+	assert.Equal(t, 3, len(newOrders))
+	assert.Equal(t, 11.0, lifetime)
+}
+
+func TestGetFilterAndObjectErrorCase1(t *testing.T) {
+	orders := `{"orders":[{"id":"filter-skewed"},{"id":"filter-rolling"}]}`
+	arrayOrders, _ := getOrdersFromJson(orders)
+	flattenOrders, _ := flattenOrders(arrayOrders)
+
+	object, filters, lifetime, newOrders, err := GetFilterAndObject(flattenOrders, nil)
+	assert.NotNil(t, err)
+	assert.Nil(t, object)
+	assert.Nil(t, filters)
+	assert.Equal(t, 2, len(newOrders))
+	assert.Equal(t, 0.0, lifetime)
+
 }

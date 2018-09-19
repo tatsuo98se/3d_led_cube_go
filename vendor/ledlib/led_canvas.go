@@ -5,7 +5,7 @@ import (
 	"strconv"
 )
 
-type ILedCanvas interface {
+type LedCanvas interface {
 	PreShow()
 	Show(c util.CubeImage)
 }
@@ -23,18 +23,18 @@ func (canvas *DummyLedCanvas) PreShow() {
 func (canvas *DummyLedCanvas) Show(c util.CubeImage) {
 }
 
-type LedCanvas struct {
+type LedCanvasImpl struct {
 }
 
-func NewLedCanvas() ILedCanvas {
-	return &LedCanvas{}
+func NewLedCanvas() *LedCanvasImpl {
+	return &LedCanvasImpl{}
 }
 
-func (canvas *LedCanvas) PreShow() {
+func (canvas *LedCanvasImpl) PreShow() {
 
 }
 
-func (canvas *LedCanvas) Show(c util.CubeImage) {
+func (canvas *LedCanvasImpl) Show(c util.CubeImage) {
 	util.ConcurrentEnumXYZ(LedWidth, LedHeight, LedDepth, func(x, y, z int) {
 		px := c.GetAt(x, y, z)
 		if px != nil && !px.IsOff() {

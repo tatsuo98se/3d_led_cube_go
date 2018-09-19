@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 )
 
-func NewRocketBitmapObj() *BitmapObj {
+func NewRocketBitmapObj() LedObject {
 	paths := []string{
 		"./asset/image/rocket/rocket1.png",
 		"./asset/image/rocket/rocket2.png",

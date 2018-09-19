@@ -13,6 +13,7 @@ type CubeImage interface {
 	ForEach(callback EnumCubeImageCallback)
 	ConcurrentForEach(callback EnumCubeImageCallback)
 	Clear()
+	Fill(c Color32)
 }
 
 type CubeImageImpl struct {
@@ -71,6 +72,11 @@ func (l *CubeImageImpl) GetAt(x, y, z int) Color32 {
 func (l *CubeImageImpl) Clear() {
 	ConcurrentEnumXYZ(l.X, l.Y, l.Z, func(x, y, z int) {
 		l.SetAt(x, y, z, nil)
+	})
+}
+func (l *CubeImageImpl) Fill(c Color32) {
+	ConcurrentEnumXYZ(l.X, l.Y, l.Z, func(x, y, z int) {
+		l.SetAt(x, y, z, c)
 	})
 }
 

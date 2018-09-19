@@ -11,7 +11,7 @@ type BitmapObj struct {
 	cube util.CubeImage
 }
 
-func NewBitmapObj(paths []string) *BitmapObj {
+func NewBitmapObj(paths []string) LedObject {
 	bmp := BitmapObj{NewLedCubeImage()}
 	bmp.load(paths)
 	return &bmp
@@ -44,6 +44,10 @@ func (b *BitmapObj) load(paths []string) {
 	}
 }
 
-func (b *BitmapObj) Draw(canvas ILedCanvas) {
+func (b *BitmapObj) Draw(canvas LedCanvas) {
 	canvas.Show(b.cube)
+}
+
+func (b *BitmapObj) DidDetach() {
+
 }

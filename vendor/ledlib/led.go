@@ -6,9 +6,11 @@ package ledlib
 */
 import "C"
 import (
+	"fmt"
 	"log"
 	"net"
 	"strconv"
+	"strings"
 )
 
 const LedWidth = 16
@@ -26,7 +28,7 @@ type Led interface {
 	Clear()
 	Show()
 	EnableSimulator(enable bool)
-	SetPort(port uint16)
+	//	SetPort(port uint16)
 }
 
 var sharedInstance Led
@@ -79,16 +81,11 @@ func (led *ledImpl) EnableSimulator(enable bool) {
 	C.EnableSimulator(C.bool(enable))
 }
 
-func (led *ledImpl) SetPort(port uint16) {
-	led.currentImpl.SetPort(port)
-}
-
 /*
 * Go Implimentation
  */
 type ledGoImpl struct {
 	ledUrl       string
-	ledPort      uint16
 	led565Buffer []byte
 	sem          chan struct{}
 }
@@ -151,16 +148,8 @@ func (led *ledGoImpl) EnableSimulator(enable bool) {
 	// do nothing.
 }
 
-func (led *ledGoImpl) SetPort(port uint16) {
-	led.ledPort = port
-}
-
 func (led *ledGoImpl) getUrl() string {
-	if led.ledPort == 0 {
-		return led.ledUrl
-	} else {
-		return led.ledUrl + ":" + strconv.FormatUint(uint64(led.ledPort), 10)
-	}
+	return led.ledUrl
 }
 
 type ledCImpl struct {
@@ -171,7 +160,24 @@ func newCLed() *ledCImpl {
 }
 
 func (led *ledCImpl) SetUrl(url string) {
-	C.SetUrl(C.CString(url))
+
+	ipAndPort := strings.Split(url, ":")
+	switch {
+	case len(ipAndPort) == 2:
+		C.SetUrl(C.CString(ipAndPort[0]))
+		port, e := strconv.ParseInt(ipAndPort[1], 10, 16)
+		if e != nil {
+			fmt.Printf("invalid port number. %s\n", ipAndPort[1])
+			return
+		}
+		C.SetPort(C.ushort(port))
+	case len(ipAndPort) == 1:
+		C.SetUrl(C.CString(ipAndPort[0]))
+	case len(ipAndPort) == 0:
+		fmt.Printf("invalid url %s\n", url)
+		return
+	}
+
 }
 
 func (led *ledCImpl) SetLed(x, y, z int, rgb uint32) {
@@ -188,8 +194,4 @@ func (led *ledCImpl) Show() {
 
 func (led *ledCImpl) EnableSimulator(enable bool) {
 	C.EnableSimulator(C.bool(enable))
-}
-
-func (led *ledCImpl) SetPort(port uint16) {
-	C.SetPort(C.ushort(port))
 }

@@ -8,7 +8,7 @@ import (
 const T = 4
 
 type LedSkewedFilter struct {
-	canvas ILedCanvas
+	canvas LedCanvas
 	cube   util.CubeImage
 	yt     float64
 	zt     float64
@@ -18,7 +18,7 @@ type LedSkewedFilter struct {
 	zc     float64
 }
 
-func NewLedSkewedFilter(canvas ILedCanvas) ILedCanvas {
+func NewLedSkewedFilter(canvas LedCanvas) LedCanvas {
 	return &LedSkewedFilter{canvas, NewLedCubeImage(), 0, 0, 0, 0, 0, 0}
 }
 

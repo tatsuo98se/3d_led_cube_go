@@ -1,13 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"flag"
 	"fmt"
 	"ledlib"
+	"log"
+	"net/http"
 	_ "net/http/pprof"
 	"runtime"
-	"strconv"
-	"strings"
 	"time"
 )
 
@@ -25,25 +26,7 @@ func main() {
 		ledlib.GetLed().EnableSimulator(true)
 	} else {
 		ledlib.GetLed().EnableSimulator(false)
-		ipAndPort := strings.Split(*optDestination, ":")
-		switch {
-		case len(ipAndPort) == 2:
-			ledlib.GetLed().SetUrl(ipAndPort[0])
-			port, e := strconv.ParseInt(ipAndPort[1], 10, 16)
-			if e != nil {
-				fmt.Printf("invalid port number. %s", ipAndPort[1])
-				return
-			}
-			ledlib.GetLed().SetPort(uint16(port))
-		case len(ipAndPort) == 1:
-			ledlib.GetLed().SetUrl(*optDestination)
-		case len(ipAndPort) == 0:
-			// do nothing
-		default:
-			fmt.Println("")
-			return
-		}
-
+		ledlib.GetLed().SetUrl(*optDestination)
 	}
 	fmt.Println(*optDestination)
 	go func() {
@@ -51,22 +34,75 @@ func main() {
 	}()
 
 	/*
-		lastUpdate := getUnixNano()
-			led := ledlib.NewLedCanvas()
-			filter1 := ledlib.NewLedRollingFilter(led)
-			filter2 := ledlib.NewLedSkewedFilter(filter1)
-			obj := ledlib.NewRocketBitmapObj()
-
-			for {
-				filter2.PreShow()
-				obj.Draw(filter2)
-				current := getUnixNano()
-				fmt.Println((current - lastUpdate) / (1000 * 1000))
-				lastUpdate = current
-			}*/
+		setup renderer
+	*/
 	renderer := ledlib.NewLedBlockRenderer()
 	renderer.Start()
-	renderer.Show(map[string]interface{}{"id": "test"})
-	time.Sleep(3 * time.Second)
+
+	// start http server
+	// endpoins are below
+	// POST /api/show       content json
+	// POST /api/abort		no content
+	// POST /api/target     text content
+	//
+	http.HandleFunc("/api/show", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "POST":
+			bufbody := new(bytes.Buffer)
+			bufbody.ReadFrom(r.Body)
+			fmt.Fprintln(w, bufbody.String())
+			renderer.Show(bufbody.String())
+		default:
+			http.Error(w, "Not implemented.", http.StatusNotFound)
+		}
+	})
+	http.HandleFunc("/api/abort", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "POST":
+			fmt.Fprintln(w, "abort")
+			renderer.Abort()
+		default:
+			http.Error(w, "Not implemented.", http.StatusNotFound)
+		}
+	})
+	http.HandleFunc("/api/target", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "POST":
+		default:
+			http.Error(w, "Not implemented.", http.StatusNotFound)
+		}
+	})
+	http.HandleFunc("/api/hello", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "GET":
+			fmt.Fprintf(w, "Hello")
+		default:
+			http.Error(w, "Not implemented.", http.StatusNotFound)
+		}
+	})
+	log.Fatal(http.ListenAndServe(":8081", nil))
 	renderer.Terminate()
+	/*
+		lastUpdate := getUnixNano()
+		led := ledlib.NewLedCanvas()
+		filter1 := ledlib.NewLedRollingFilter(led)
+		filter2 := ledlib.NewLedSkewedFilter(filter1)
+		obj := ledlib.NewRocketBitmapObj()
+
+		for {
+			filter2.PreShow()
+			obj.Draw(filter2)
+			current := getUnixNano()
+			fmt.Println((current - lastUpdate) / (1000 * 1000))
+			lastUpdate = current
+		}*/
+
+	/*
+		renderer.Show(`{"orders":[{"id":"filter-rolling"},{"id":"object-rocket", "lifetime":1},{"id":"filter-skewed"},{"id":"object-rocket"}]}`)
+		time.Sleep(3 * time.Second)
+		renderer.Show(`{"orders":[{"id":"filter-rolling"},{"id":"object-rocket", "lifetime":1},{"id":"filter-skewed"},{"id":"object-rocket"}]}`)
+		time.Sleep(10 * time.Second)
+		renderer.Abort()
+		time.Sleep(3 * time.Second)
+		renderer.Terminate()*/
 }

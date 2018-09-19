@@ -7,13 +7,13 @@ import (
 const MaxAdd = 300
 
 type LedRollingFilter struct {
-	canvas ILedCanvas
+	canvas LedCanvas
 	add    int
 	timer  *Timer
 	cube   util.CubeImage
 }
 
-func NewLedRollingFilter(canvas ILedCanvas) ILedCanvas {
+func NewLedRollingFilter(canvas LedCanvas) LedCanvas {
 	return &LedRollingFilter{canvas, 0, NewTimer(100), NewLedCubeImage()}
 }
 
