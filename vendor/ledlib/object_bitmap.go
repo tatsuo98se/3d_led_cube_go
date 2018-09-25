@@ -7,17 +7,17 @@ import (
 	"os"
 )
 
-type BitmapObj struct {
+type ObjectBitmap struct {
 	cube util.CubeImage
 }
 
-func NewBitmapObj(paths []string) LedObject {
-	bmp := BitmapObj{NewLedCubeImage()}
+func NewObjectBitmap(paths []string) LedObject {
+	bmp := ObjectBitmap{NewLedCubeImage()}
 	bmp.load(paths)
 	return &bmp
 }
 
-func (b *BitmapObj) load(paths []string) {
+func (b *ObjectBitmap) load(paths []string) {
 
 	for z, path := range paths {
 		if path == "" {
@@ -44,10 +44,10 @@ func (b *BitmapObj) load(paths []string) {
 	}
 }
 
-func (b *BitmapObj) Draw(canvas LedCanvas) {
+func (b *ObjectBitmap) Draw(canvas LedCanvas) {
 	canvas.Show(b.cube)
 }
 
-func (b *BitmapObj) DidDetach() {
+func (b *ObjectBitmap) DidDetach() {
 
 }

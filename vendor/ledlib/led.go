@@ -27,6 +27,7 @@ type Led interface {
 	SetLed(x, y, z int, rgb uint32)
 	Clear()
 	Show()
+	Enable(enable bool)
 	EnableSimulator(enable bool)
 	//	SetPort(port uint16)
 }
@@ -43,7 +44,7 @@ func GetLed() Led {
 func newLed() *ledImpl {
 	goImpl := newGoLed()
 	cImpl := newCLed()
-	return &ledImpl{goImpl, cImpl, cImpl, true}
+	return &ledImpl{goImpl, cImpl, goImpl, true, false}
 }
 
 /*
@@ -53,6 +54,7 @@ type ledImpl struct {
 	goImpl          *ledGoImpl
 	cImpl           *ledCImpl
 	currentImpl     Led
+	enable          bool
 	enableSimulator bool
 }
 
@@ -69,7 +71,13 @@ func (led *ledImpl) Clear() {
 }
 
 func (led *ledImpl) Show() {
-	led.currentImpl.Show()
+	if led.enable {
+		led.currentImpl.Show()
+	}
+}
+
+func (led *ledImpl) Enable(enable bool) {
+	led.enable = enable
 }
 
 func (led *ledImpl) EnableSimulator(enable bool) {
@@ -144,6 +152,10 @@ func (led *ledGoImpl) Show() {
 	conn.Write(led.led565Buffer)
 }
 
+func (led *ledGoImpl) Enable(enable bool) {
+	// do nothing.
+}
+
 func (led *ledGoImpl) EnableSimulator(enable bool) {
 	// do nothing.
 }
@@ -190,6 +202,9 @@ func (led *ledCImpl) Clear() {
 
 func (led *ledCImpl) Show() {
 	C.Show()
+}
+
+func (led *ledCImpl) Enable(enable bool) {
 }
 
 func (led *ledCImpl) EnableSimulator(enable bool) {

@@ -7,7 +7,7 @@ import (
 
 const T = 4
 
-type LedSkewedFilter struct {
+type FilterSkewed struct {
 	canvas LedCanvas
 	cube   util.CubeImage
 	yt     float64
@@ -18,11 +18,11 @@ type LedSkewedFilter struct {
 	zc     float64
 }
 
-func NewLedSkewedFilter(canvas LedCanvas) LedCanvas {
-	return &LedSkewedFilter{canvas, NewLedCubeImage(), 0, 0, 0, 0, 0, 0}
+func NewFilterSkewed(canvas LedCanvas) LedCanvas {
+	return &FilterSkewed{canvas, NewLedCubeImage(), 0, 0, 0, 0, 0, 0}
 }
 
-func (f *LedSkewedFilter) PreShow() {
+func (f *FilterSkewed) PreShow() {
 	f.cube.Clear()
 	f.canvas.PreShow()
 	f.yt += 0.02 * 0.15
@@ -33,7 +33,7 @@ func (f *LedSkewedFilter) PreShow() {
 	f.zc = math.Cos(f.zt * 3.14 * T)
 }
 
-func (f *LedSkewedFilter) Show(c util.CubeImage) {
+func (f *FilterSkewed) Show(c util.CubeImage) {
 	dx := float64(LedWidth / 2.0)
 	dy := float64(LedHeight / 4.0 * 3)
 	dz := float64(LedDepth / 2.0)

@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"ledlib"
+	"ledlib/webapi"
 	"log"
 	"net/http"
 	_ "net/http/pprof"
@@ -65,9 +66,18 @@ func main() {
 			http.Error(w, "Not implemented.", http.StatusNotFound)
 		}
 	})
-	http.HandleFunc("/api/target", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/api/config", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "POST":
+			bufbody := new(bytes.Buffer)
+			bufbody.ReadFrom(r.Body)
+			config, err := webapi.UnmarshalConfigration(bufbody.Bytes())
+			if err != nil {
+				http.Error(w, "Invalid json body.", http.StatusNotFound)
+			} else {
+				ledlib.GetLed().Enable(config.Enable)
+			}
+
 		default:
 			http.Error(w, "Not implemented.", http.StatusNotFound)
 		}
@@ -85,9 +95,9 @@ func main() {
 	/*
 		lastUpdate := getUnixNano()
 		led := ledlib.NewLedCanvas()
-		filter1 := ledlib.NewLedRollingFilter(led)
-		filter2 := ledlib.NewLedSkewedFilter(filter1)
-		obj := ledlib.NewRocketBitmapObj()
+		filter1 := ledlib.NewFilterRolling(led)
+		filter2 := ledlib.NewFilterSkewed(filter1)
+		obj := ledlib.NewObjectRocket()
 
 		for {
 			filter2.PreShow()

@@ -21,16 +21,18 @@ func CreateObject(order map[string]interface{}, ledCanvas LedCanvas) (interface{
 				Objects
 			*/
 			case "object-blank":
-				return NewFillObj(util.NewFromRGB(0, 0, 0)), lifetime, nil
+				return NewObjectFill(util.NewFromRGB(0, 0, 0)), lifetime, nil
 			case "object-rocket":
-				return NewRocketBitmapObj(), lifetime, nil
+				return NewObjectRocket(), lifetime, nil
 				/*
 					Filters
 				*/
 			case "filter-rolling":
-				return NewLedRollingFilter(ledCanvas), 0, nil
+				return NewFilterRolling(ledCanvas), 0, nil
 			case "filter-skewed":
-				return NewLedSkewedFilter(ledCanvas), 0, nil
+				return NewFilterSkewed(ledCanvas), 0, nil
+			case "filter-snows":
+				return NewFilterSnows(ledCanvas), 0, nil
 
 			default:
 				return nil, 0, errors.New("Unnown Object Id")

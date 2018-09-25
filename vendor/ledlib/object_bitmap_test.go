@@ -4,9 +4,9 @@ import (
 	"testing"
 )
 
-func TestNewBitmapObj(t *testing.T) {
+func TestNewObjectBitmap(t *testing.T) {
 
-	target := NewRocketBitmapObj()
+	target := NewObjectRocket()
 	if target == nil {
 		t.Fail()
 	}

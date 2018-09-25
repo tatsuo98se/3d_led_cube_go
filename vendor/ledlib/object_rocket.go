@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 )
 
-func NewRocketBitmapObj() LedObject {
+func NewObjectRocket() LedObject {
 	paths := []string{
 		"./asset/image/rocket/rocket1.png",
 		"./asset/image/rocket/rocket2.png",
@@ -20,5 +20,5 @@ func NewRocketBitmapObj() LedObject {
 	for i, _ := range paths {
 		paths[i] = filepath.Join(build.Default.GOPATH, programPath, paths[i])
 	}
-	return NewBitmapObj(paths)
+	return NewObjectBitmap(paths)
 }
