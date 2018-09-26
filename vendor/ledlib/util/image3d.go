@@ -6,24 +6,24 @@ import (
 
 const usingCore = 2
 
-type EnumCubeImageCallback func(x, y, z int, c Color32)
-type CubeImage interface {
+type EnumImage3DCallback func(x, y, z int, c Color32)
+type Image3D interface {
 	SetAt(x, y, z int, c Color32)
 	GetAt(x, y, z int) Color32
-	ForEach(callback EnumCubeImageCallback)
-	ConcurrentForEach(callback EnumCubeImageCallback)
+	ForEach(callback EnumImage3DCallback)
+	ConcurrentForEach(callback EnumImage3DCallback)
 	Clear()
 	Fill(c Color32)
 }
 
-type CubeImageImpl struct {
+type Image3DImpl struct {
 	X, Y, Z                   int
 	offsetX, offsetY, offsetZ int
 	image                     [][][]Color32
 }
 
-func NewCubeImage(x, y, z, offsetX, offsetY, offsetZ int) CubeImage {
-	cube := CubeImageImpl{
+func NewImage3D(x, y, z, offsetX, offsetY, offsetZ int) Image3D {
+	cube := Image3DImpl{
 		x, y, z,
 		offsetX, offsetY, offsetZ,
 		make([][][]Color32, x)}
@@ -37,7 +37,7 @@ func NewCubeImage(x, y, z, offsetX, offsetY, offsetZ int) CubeImage {
 	return &cube
 }
 
-func (l *CubeImageImpl) isInRange(x, y, z int) bool {
+func (l *Image3DImpl) isInRange(x, y, z int) bool {
 	switch {
 	case 0 > x+l.offsetX:
 		fallthrough
@@ -55,13 +55,13 @@ func (l *CubeImageImpl) isInRange(x, y, z int) bool {
 	return true
 }
 
-func (l *CubeImageImpl) SetAt(x, y, z int, c Color32) {
+func (l *Image3DImpl) SetAt(x, y, z int, c Color32) {
 	if l.isInRange(x, y, z) {
 		l.image[x+l.offsetX][y+l.offsetY][z+l.offsetZ] = c
 	}
 }
 
-func (l *CubeImageImpl) GetAt(x, y, z int) Color32 {
+func (l *Image3DImpl) GetAt(x, y, z int) Color32 {
 	if l.isInRange(x, y, z) {
 		return l.image[x+l.offsetX][y+l.offsetY][z+l.offsetZ]
 	} else {
@@ -69,18 +69,18 @@ func (l *CubeImageImpl) GetAt(x, y, z int) Color32 {
 	}
 }
 
-func (l *CubeImageImpl) Clear() {
+func (l *Image3DImpl) Clear() {
 	ConcurrentEnumXYZ(l.X, l.Y, l.Z, func(x, y, z int) {
 		l.SetAt(x, y, z, nil)
 	})
 }
-func (l *CubeImageImpl) Fill(c Color32) {
+func (l *Image3DImpl) Fill(c Color32) {
 	ConcurrentEnumXYZ(l.X, l.Y, l.Z, func(x, y, z int) {
 		l.SetAt(x, y, z, c)
 	})
 }
 
-func (l *CubeImageImpl) ForEach(callback EnumCubeImageCallback) {
+func (l *Image3DImpl) ForEach(callback EnumImage3DCallback) {
 	EnumXYZ(l.X, l.Y, l.Z, func(x, y, z int) {
 		c := l.GetAt(x, y, z)
 		if c != nil && !c.IsOff() {
@@ -88,7 +88,7 @@ func (l *CubeImageImpl) ForEach(callback EnumCubeImageCallback) {
 		}
 	})
 }
-func (l *CubeImageImpl) ConcurrentForEach(callback EnumCubeImageCallback) {
+func (l *Image3DImpl) ConcurrentForEach(callback EnumImage3DCallback) {
 	ConcurrentEnumXYZ(l.X, l.Y, l.Z, func(x, y, z int) {
 		c := l.GetAt(x, y, z)
 		if c != nil && !c.IsOff() {

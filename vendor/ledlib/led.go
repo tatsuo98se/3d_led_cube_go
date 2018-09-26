@@ -28,6 +28,7 @@ type Led interface {
 	Clear()
 	Show()
 	Enable(enable bool)
+	IsEnable() bool
 	EnableSimulator(enable bool)
 	//	SetPort(port uint16)
 }
@@ -78,6 +79,9 @@ func (led *ledImpl) Show() {
 
 func (led *ledImpl) Enable(enable bool) {
 	led.enable = enable
+}
+func (led *ledImpl) IsEnable() bool {
+	return led.enable
 }
 
 func (led *ledImpl) EnableSimulator(enable bool) {
@@ -159,6 +163,9 @@ func (led *ledGoImpl) Enable(enable bool) {
 func (led *ledGoImpl) EnableSimulator(enable bool) {
 	// do nothing.
 }
+func (led *ledGoImpl) IsEnable() bool {
+	return true
+}
 
 func (led *ledGoImpl) getUrl() string {
 	return led.ledUrl
@@ -205,6 +212,9 @@ func (led *ledCImpl) Show() {
 }
 
 func (led *ledCImpl) Enable(enable bool) {
+}
+func (led *ledCImpl) IsEnable() bool {
+	return true
 }
 
 func (led *ledCImpl) EnableSimulator(enable bool) {

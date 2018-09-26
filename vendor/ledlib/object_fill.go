@@ -5,19 +5,15 @@ import (
 )
 
 type ObjectFill struct {
-	cube util.CubeImage
+	cube util.Image3D
 }
 
 func NewObjectFill(c util.Color32) LedObject {
-	obj := ObjectFill{NewLedCubeImage()}
+	obj := ObjectFill{NewLedImage3D()}
 	obj.cube.Fill(c)
 	return &obj
 }
 
-func (b *ObjectFill) Draw(canvas LedCanvas) {
-	canvas.Show(b.cube)
-}
-
-func (b *ObjectFill) DidDetach() {
-
+func (b *ObjectFill) GetImage3D() util.Image3D {
+	return b.cube
 }

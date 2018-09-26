@@ -14,7 +14,7 @@ type DummyObject struct {
 func (o *DummyObject) IsExpired() bool {
 	return o.Expired
 }
-func (o *DummyObject) Draw(cube util.CubeImage) {
+func (o *DummyObject) Draw(cube util.Image3D) {
 
 }
 

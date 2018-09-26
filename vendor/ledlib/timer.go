@@ -1,30 +1,33 @@
 package ledlib
 
-import "time"
+import (
+	"time"
+)
 
 type Timer struct {
-	last_update int64
-	interval    int64
+	start       time.Time
+	last_update time.Time
+	interval    time.Duration
 }
 
-func (t *Timer) getUpdateTime() int64 {
-	return t.last_update + t.interval
-}
-
-func NewTimer(intervalInMsec int64) *Timer {
-	return &Timer{time.Now().UnixNano(), intervalInMsec * 1000 * 1000}
+func NewTimer(interval time.Duration) *Timer {
+	return &Timer{time.Now(), time.Now(), interval}
 }
 
 func (t *Timer) ResetTimer() {
-	t.last_update = time.Now().UnixNano()
+	t.last_update = time.Now()
 }
 
 func (t *Timer) IsPast() bool {
-	now := time.Now().UnixNano()
-	if now > t.getUpdateTime() {
+	sub := time.Now().Sub(t.last_update)
+	if sub > t.interval {
 		t.ResetTimer()
 		return true
-	} else {
-		return false
 	}
+	return false
+}
+
+func (t *Timer) GetPastCount() uint64 {
+	sub := time.Now().Sub(t.start)
+	return uint64(sub / t.interval)
 }

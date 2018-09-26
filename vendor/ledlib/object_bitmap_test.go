@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestNewObjectBitmap(t *testing.T) {
+func TestNewObjectCubeBitmap(t *testing.T) {
 
 	target := NewObjectRocket()
 	if target == nil {

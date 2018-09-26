@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"ledlib"
@@ -15,6 +16,11 @@ import (
 
 func getUnixNano() int64 {
 	return time.Now().UnixNano()
+}
+
+type Status struct {
+	Enable bool   `json:"enable"`
+	Target string `json:"target"`
 }
 
 func main() {
@@ -90,29 +96,17 @@ func main() {
 			http.Error(w, "Not implemented.", http.StatusNotFound)
 		}
 	})
+	http.HandleFunc("/api/status", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "GET":
+			status := Status{ledlib.GetLed().IsEnable(), *optDestination}
+			jsoBytes, _ := json.Marshal(status)
+			w.Write(jsoBytes)
+		default:
+			http.Error(w, "Not implemented.", http.StatusNotFound)
+		}
+	})
 	log.Fatal(http.ListenAndServe(":8081", nil))
 	renderer.Terminate()
-	/*
-		lastUpdate := getUnixNano()
-		led := ledlib.NewLedCanvas()
-		filter1 := ledlib.NewFilterRolling(led)
-		filter2 := ledlib.NewFilterSkewed(filter1)
-		obj := ledlib.NewObjectRocket()
 
-		for {
-			filter2.PreShow()
-			obj.Draw(filter2)
-			current := getUnixNano()
-			fmt.Println((current - lastUpdate) / (1000 * 1000))
-			lastUpdate = current
-		}*/
-
-	/*
-		renderer.Show(`{"orders":[{"id":"filter-rolling"},{"id":"object-rocket", "lifetime":1},{"id":"filter-skewed"},{"id":"object-rocket"}]}`)
-		time.Sleep(3 * time.Second)
-		renderer.Show(`{"orders":[{"id":"filter-rolling"},{"id":"object-rocket", "lifetime":1},{"id":"filter-skewed"},{"id":"object-rocket"}]}`)
-		time.Sleep(10 * time.Second)
-		renderer.Abort()
-		time.Sleep(3 * time.Second)
-		renderer.Terminate()*/
 }

@@ -3,13 +3,15 @@ package ledlib
 import (
 	"ledlib/util"
 	"math"
+	"time"
 )
 
-const T = 4
+const T = 20
 
 type FilterSkewed struct {
 	canvas LedCanvas
-	cube   util.CubeImage
+	cube   util.Image3D
+	timer  *Timer
 	yt     float64
 	zt     float64
 	ys     float64
@@ -19,21 +21,22 @@ type FilterSkewed struct {
 }
 
 func NewFilterSkewed(canvas LedCanvas) LedCanvas {
-	return &FilterSkewed{canvas, NewLedCubeImage(), 0, 0, 0, 0, 0, 0}
+	return &FilterSkewed{canvas, NewLedImage3D(), NewTimer(50 * time.Millisecond),
+		0, 0, 0, 0, 0, 0}
 }
 
-func (f *FilterSkewed) PreShow() {
-	f.cube.Clear()
-	f.canvas.PreShow()
-	f.yt += 0.02 * 0.15
-	f.zt += 0.02 * 0.15
-	f.ys = math.Sin(f.yt * 3.14 * T)
-	f.yc = math.Cos(f.yt * 3.14 * T)
-	f.zs = math.Sin(f.zt * 3.14 * T)
-	f.zc = math.Cos(f.zt * 3.14 * T)
-}
+func (f *FilterSkewed) Show(c util.Image3D, param LedCanvasParam) {
 
-func (f *FilterSkewed) Show(c util.CubeImage) {
+	if f.timer.IsPast() {
+		f.cube.Clear()
+		f.yt += 0.02 * 0.15
+		f.zt += 0.02 * 0.15
+		f.ys = math.Sin(f.yt * 3.14 * T)
+		f.yc = math.Cos(f.yt * 3.14 * T)
+		f.zs = math.Sin(f.zt * 3.14 * T)
+		f.zc = math.Cos(f.zt * 3.14 * T)
+	}
+
 	dx := float64(LedWidth / 2.0)
 	dy := float64(LedHeight / 4.0 * 3)
 	dz := float64(LedDepth / 2.0)
@@ -44,5 +47,5 @@ func (f *FilterSkewed) Show(c util.CubeImage) {
 		xx, yy = ((xx-dx)*f.zc+(yy-dy)*f.zs)+dx, (-(xx-dx)*f.zs+(yy-dy)*f.zc)+dy
 		f.cube.SetAt(int(math.Round(xx)), int(math.Round(yy)), int(math.Round(zz)), c)
 	})
-	f.canvas.Show(f.cube)
+	f.canvas.Show(f.cube, param)
 }

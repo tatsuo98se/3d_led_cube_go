@@ -1,6 +1,11 @@
 package ledlib
 
+import "ledlib/util"
+
+func ShowObject(canvas LedCanvas, obj LedObject, param LedCanvasParam) {
+	canvas.Show(obj.GetImage3D(), param)
+}
+
 type LedObject interface {
-	DidDetach()
-	Draw(canvas LedCanvas)
+	GetImage3D() util.Image3D
 }

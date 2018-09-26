@@ -8,11 +8,11 @@ import (
 )
 
 type ObjectBitmap struct {
-	cube util.CubeImage
+	cube util.Image3D
 }
 
 func NewObjectBitmap(paths []string) LedObject {
-	bmp := ObjectBitmap{NewLedCubeImage()}
+	bmp := ObjectBitmap{NewLedImage3D()}
 	bmp.load(paths)
 	return &bmp
 }
@@ -44,10 +44,6 @@ func (b *ObjectBitmap) load(paths []string) {
 	}
 }
 
-func (b *ObjectBitmap) Draw(canvas LedCanvas) {
-	canvas.Show(b.cube)
-}
-
-func (b *ObjectBitmap) DidDetach() {
-
+func (b *ObjectBitmap) GetImage3D() util.Image3D {
+	return b.cube
 }

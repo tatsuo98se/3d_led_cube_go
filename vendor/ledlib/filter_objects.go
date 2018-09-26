@@ -20,7 +20,7 @@ import "ledlib/util"
 
 type LedManagedObject interface {
 	IsExpired() bool
-	Draw(cube util.CubeImage)
+	Draw(cube util.Image3D)
 }
 
 type FilterObjects struct {
@@ -44,11 +44,8 @@ func (l *FilterObjects) Len() int {
 func (f *FilterObjects) Append(obj LedManagedObject) {
 	f.objects = append(f.objects, obj)
 }
-func (f *FilterObjects) PreShow() {
-	f.canvas.PreShow()
 
-}
-func (f *FilterObjects) Show(cube util.CubeImage) {
+func (f *FilterObjects) Show(cube util.Image3D, param LedCanvasParam) {
 	actives := make([]int, 0, len(f.objects))
 	for i, object := range f.objects {
 		if !object.IsExpired() {
@@ -61,5 +58,5 @@ func (f *FilterObjects) Show(cube util.CubeImage) {
 		newobjects[i] = f.objects[target]
 	}
 	f.objects = newobjects
-	f.canvas.Show(cube)
+	f.canvas.Show(cube, param)
 }

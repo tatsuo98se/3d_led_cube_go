@@ -2,6 +2,7 @@ package ledlib
 
 import (
 	"ledlib/util"
+	"time"
 )
 
 const MaxAdd = 300
@@ -10,24 +11,20 @@ type FilterRolling struct {
 	canvas LedCanvas
 	add    int
 	timer  *Timer
-	cube   util.CubeImage
+	cube   util.Image3D
 }
 
 func NewFilterRolling(canvas LedCanvas) LedCanvas {
-	return &FilterRolling{canvas, 0, NewTimer(100), NewLedCubeImage()}
+	return &FilterRolling{canvas, 0, NewTimer(100 * time.Millisecond), NewLedImage3D()}
 }
 
-func (f *FilterRolling) PreShow() {
+func (f *FilterRolling) Show(c util.Image3D, param LedCanvasParam) {
 	f.cube.Clear()
-	f.canvas.PreShow()
 	if f.timer.IsPast() {
 		f.add = (f.add + 1)
 	}
-}
-
-func (f *FilterRolling) Show(c util.CubeImage) {
 	c.ConcurrentForEach(func(x, y, z int, c util.Color32) {
 		f.cube.SetAt(x, (y+f.add)%LedHeight, z, c)
 	})
-	f.canvas.Show(f.cube)
+	f.canvas.Show(f.cube, param)
 }

@@ -133,6 +133,7 @@ func (l *ledBockRendererImpl) Start() {
 		var orders []interface{}
 		var lifetime float64
 		var startTime int64
+		param := NewLedCanvasParam()
 		isExpired := true
 
 		for {
@@ -149,7 +150,7 @@ func (l *ledBockRendererImpl) Start() {
 					} else if flattenOrders, err := flattenOrders(arrayOrders); err != nil {
 						//error
 					} else {
-						object, filters, lifetime, orders, err = GetFilterAndObject(flattenOrders, baseCanvas)
+						object, filters, lifetime, orders, param, err = GetFilterAndObject(flattenOrders, baseCanvas, param)
 						if err != nil {
 							isExpired = true
 						} else {
@@ -162,15 +163,14 @@ func (l *ledBockRendererImpl) Start() {
 				if lifetime != 0 &&
 					(time.Now().Unix()-startTime) > int64(lifetime) {
 					var err error
-					object, filters, lifetime, orders, err = GetFilterAndObject(orders, filters)
+					object, filters, lifetime, orders, param, err = GetFilterAndObject(orders, filters, param)
 					if err != nil {
 						isExpired = true
 					}
 				}
 
 				if !isExpired {
-					filters.PreShow()
-					object.Draw(filters)
+					ShowObject(filters, object, param)
 				} else {
 					// idle
 				}
@@ -179,7 +179,7 @@ func (l *ledBockRendererImpl) Start() {
 	}()
 }
 
-func GetFilterAndObject(iOrders []interface{}, canvas LedCanvas) (LedObject, LedCanvas, float64, []interface{}, error) {
+func GetFilterAndObject(iOrders []interface{}, canvas LedCanvas, param LedCanvasParam) (LedObject, LedCanvas, float64, []interface{}, LedCanvasParam, error) {
 
 	filter := canvas
 	var object LedObject
@@ -187,7 +187,7 @@ func GetFilterAndObject(iOrders []interface{}, canvas LedCanvas) (LedObject, Led
 	for {
 		if len(jsonOrders) == 0 {
 			// invalid order
-			return nil, nil, 0, iOrders, errors.New("invalid order format")
+			return nil, nil, 0, iOrders, param, errors.New("invalid order format")
 		}
 		rawOrder := jsonOrders[0]
 		jsonOrders = jsonOrders[1:]
@@ -195,17 +195,19 @@ func GetFilterAndObject(iOrders []interface{}, canvas LedCanvas) (LedObject, Led
 		if jsonOrder, ok := rawOrder.(map[string]interface{}); ok {
 			order, lifetime, err := CreateObject(jsonOrder, filter)
 			if err != nil {
-				return nil, nil, 0, iOrders, err
+				return nil, nil, 0, iOrders, param, err
 			}
 
 			switch v := order.(type) {
 			case LedObject:
 				object = v
-				return object, filter, lifetime, jsonOrders, nil
+				return object, filter, lifetime, jsonOrders, param, nil
 			case LedCanvas:
+				value, _ := GetJSONValue(jsonOrder, "id")
+				param.AppendsEffect(value.(string))
 				filter = v
 			default:
-				return nil, nil, 0, iOrders, errors.New("invalid order format")
+				return nil, nil, 0, iOrders, param, errors.New("invalid order format")
 			}
 		}
 	}

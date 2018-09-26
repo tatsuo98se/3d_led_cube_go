@@ -17,7 +17,7 @@ type ObjectSnow struct {
 func NewObjectSnow() LedManagedObject {
 	snow := ObjectSnow{}
 	rand.Seed(time.Now().UnixNano())
-	snow.timer = NewTimer(100)
+	snow.timer = NewTimer(100 * time.Millisecond)
 	snow.x = rand.Intn(LedWidth)
 	snow.z = rand.Intn(LedDepth)
 	snow.y = 0
@@ -26,10 +26,7 @@ func NewObjectSnow() LedManagedObject {
 	return &snow
 }
 
-func (o *ObjectSnow) DidDetach() {
-}
-
-func (o *ObjectSnow) Draw(cube util.CubeImage) {
+func (o *ObjectSnow) Draw(cube util.Image3D) {
 	if o.timer.IsPast() {
 		o.y = o.y + o.gravity
 	}
@@ -55,19 +52,15 @@ type FilterSnows struct {
 
 func NewFilterSnows(canvas LedCanvas) LedCanvas {
 	filter := FilterSnows{}
-	filter.timer = NewTimer(1000)
+	filter.timer = NewTimer(1 * time.Second)
 	filter.filterObjects = NewFilterObjects(canvas)
 
 	return &filter
 }
 
-func (f *FilterSnows) PreShow() {
-	f.filterObjects.PreShow()
+func (f *FilterSnows) Show(c util.Image3D, param LedCanvasParam) {
 	if f.timer.IsPast() {
 		f.filterObjects.Append(NewObjectSnow())
 	}
-}
-
-func (f *FilterSnows) Show(c util.CubeImage) {
-	f.filterObjects.Show(c)
+	f.filterObjects.Show(c, param)
 }
