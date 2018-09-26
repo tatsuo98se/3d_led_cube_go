@@ -24,6 +24,8 @@ func CreateObject(order map[string]interface{}, ledCanvas LedCanvas) (interface{
 				return NewObjectFill(util.NewFromRGB(0, 0, 0)), lifetime, nil
 			case "object-rocket":
 				return NewObjectRocket(), lifetime, nil
+			case "object-stickman":
+				return NewObjectStickman(), lifetime, nil
 				/*
 					Filters
 				*/
