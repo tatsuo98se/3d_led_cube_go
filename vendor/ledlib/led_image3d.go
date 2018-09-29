@@ -12,6 +12,12 @@ const ledCubeOffsetX = LedWidth
 const ledCubeOffsetY = LedHeight
 const ledCubeOffsetZ = LedDepth
 
+func NewLedData3D() util.Data3D {
+	return util.NewData3D(
+		LedInternalWidh, LedInternalHeight, LedInternalDepth,
+		ledCubeOffsetX, ledCubeOffsetY, ledCubeOffsetZ)
+}
+
 func NewLedImage3D() util.Image3D {
 	return util.NewImage3D(
 		LedInternalWidh, LedInternalHeight, LedInternalDepth,
