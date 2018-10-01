@@ -7,6 +7,7 @@ type Data3D interface {
 	IsInRange(x, y, z int) bool
 	ForEach(callback EnumData3DCallback)
 	ConcurrentForEach(callback EnumData3DCallback)
+	ConcurrentForEachAll(callback EnumData3DCallback)
 	Clear()
 	Fill(c interface{})
 }
@@ -89,5 +90,11 @@ func (l *Data3DImpl) ConcurrentForEach(callback EnumData3DCallback) {
 		if c != nil {
 			callback(x, y, z, c)
 		}
+	})
+}
+func (l *Data3DImpl) ConcurrentForEachAll(callback EnumData3DCallback) {
+	ConcurrentEnumXYZ(l.X, l.Y, l.Z, func(x, y, z int) {
+		c := l.GetAt(x, y, z)
+		callback(x, y, z, c)
 	})
 }

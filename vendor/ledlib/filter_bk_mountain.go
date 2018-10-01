@@ -5,13 +5,13 @@ import (
 	"time"
 )
 
-type FilterMountain struct {
+type FilterBkMountain struct {
 	filterObjects     *FilterObjects
 	filterObjectsSnow *FilterObjects
 }
 
-func NewFilterMountain(canvas LedCanvas) LedCanvas {
-	filter := FilterMountain{}
+func NewFilterBkMountain(canvas LedCanvas) LedCanvas {
+	filter := FilterBkMountain{}
 	filter.filterObjects = NewFilterObjects(canvas)
 	filter.filterObjects.Append(NewObjectScrolledBitmap(
 		util.GetFullPath("./asset/image/mountain/mountain1.png"), 6, 300*time.Millisecond))
@@ -26,7 +26,7 @@ func NewFilterMountain(canvas LedCanvas) LedCanvas {
 	return &filter
 }
 
-func (f *FilterMountain) Show(c util.Image3D, param LedCanvasParam) {
+func (f *FilterBkMountain) Show(c util.Image3D, param LedCanvasParam) {
 	if param.HasEffect("filter-snows") {
 		f.filterObjectsSnow.Show(c, param)
 	} else {

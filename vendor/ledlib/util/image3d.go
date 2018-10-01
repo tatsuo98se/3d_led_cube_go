@@ -6,6 +6,7 @@ type Image3D interface {
 	GetAt(x, y, z int) Color32
 	ForEach(callback EnumImage3DCallback)
 	ConcurrentForEach(callback EnumImage3DCallback)
+	ConcurrentForEachAll(callback EnumImage3DCallback)
 	Clear()
 	Fill(c Color32)
 }
@@ -62,5 +63,11 @@ func (l *Image3DImpl) ConcurrentForEach(callback EnumImage3DCallback) {
 		if c != nil && !c.IsOff() {
 			callback(x, y, z, c)
 		}
+	})
+}
+func (l *Image3DImpl) ConcurrentForEachAll(callback EnumImage3DCallback) {
+	l.data.ConcurrentForEachAll(func(x, y, z int, data interface{}) {
+		c, _ := data.(Color32)
+		callback(x, y, z, c)
 	})
 }

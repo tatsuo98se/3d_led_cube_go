@@ -166,6 +166,9 @@ func (l *ledBockRendererImpl) Start() {
 					object, filters, lifetime, orders, param, err = GetFilterAndObject(orders, filters, param)
 					if err != nil {
 						isExpired = true
+					} else {
+						isExpired = false
+						startTime = time.Now().Unix()
 					}
 				}
 

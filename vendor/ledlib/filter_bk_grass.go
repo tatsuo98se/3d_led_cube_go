@@ -5,12 +5,12 @@ import (
 	"time"
 )
 
-type FilterGrass struct {
+type FilterBkGrass struct {
 	filterObjects *FilterObjects
 }
 
-func NewFilterGrass(canvas LedCanvas) LedCanvas {
-	filter := FilterGrass{}
+func NewFilterBkGrass(canvas LedCanvas) LedCanvas {
+	filter := FilterBkGrass{}
 	filter.filterObjects = NewFilterObjects(canvas)
 
 	duration := 100 * time.Millisecond
@@ -30,6 +30,6 @@ func NewFilterGrass(canvas LedCanvas) LedCanvas {
 	return &filter
 }
 
-func (f *FilterGrass) Show(c util.Image3D, param LedCanvasParam) {
+func (f *FilterBkGrass) Show(c util.Image3D, param LedCanvasParam) {
 	f.filterObjects.Show(c, param)
 }

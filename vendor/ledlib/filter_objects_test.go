@@ -24,10 +24,10 @@ func TestNewFilterObjects(t *testing.T) {
 	rocket := NewObjectRocket()
 
 	target.Append(&obj1)
-	rocket.Draw(target)
+	ShowObject(target, rocket, nil)
 	assert.Equal(t, 1, target.Len())
 
 	obj1.Expired = true
-	rocket.Draw(target)
+	ShowObject(target, rocket, nil)
 	assert.Equal(t, 0, target.Len())
 }

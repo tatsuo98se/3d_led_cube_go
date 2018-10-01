@@ -45,20 +45,20 @@ func (o *ObjectSnow) IsExpired() bool {
 
 //////////////////////////
 
-type FilterSnows struct {
+type FilterBkSnows struct {
 	filterObjects *FilterObjects
 	timer         *Timer
 }
 
-func NewFilterSnows(canvas LedCanvas) LedCanvas {
-	filter := FilterSnows{}
+func NewFilterBkSnows(canvas LedCanvas) LedCanvas {
+	filter := FilterBkSnows{}
 	filter.timer = NewTimer(1 * time.Second)
 	filter.filterObjects = NewFilterObjects(canvas)
 
 	return &filter
 }
 
-func (f *FilterSnows) Show(c util.Image3D, param LedCanvasParam) {
+func (f *FilterBkSnows) Show(c util.Image3D, param LedCanvasParam) {
 	if f.timer.IsPast() {
 		f.filterObjects.Append(NewObjectSnow())
 	}

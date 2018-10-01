@@ -187,7 +187,7 @@ func TestGetFilterAndObject1(t *testing.T) {
 	arrayOrders, _ := getOrdersFromJson(orders)
 	flattenOrders, _ := flattenOrders(arrayOrders)
 
-	object, filters, lifetime, newOrders, param, err := GetFilterAndObject(flattenOrders, nil, NewLedCanvasParam())
+	object, filters, lifetime, newOrders, _, err := GetFilterAndObject(flattenOrders, nil, NewLedCanvasParam())
 	assert.Nil(t, err)
 	assert.NotNil(t, object)
 	assert.NotNil(t, filters)
@@ -201,14 +201,14 @@ func TestGetFilterAndObject2(t *testing.T) {
 	arrayOrders, _ := getOrdersFromJson(orders)
 	flattenOrders, _ := flattenOrders(arrayOrders)
 
-	object, filters, lifetime, newOrders, param, err := GetFilterAndObject(flattenOrders, nil, NewLedCanvasParam())
+	object, filters, lifetime, newOrders, _, err := GetFilterAndObject(flattenOrders, nil, NewLedCanvasParam())
 	assert.Nil(t, err)
 	assert.NotNil(t, object)
 	assert.NotNil(t, filters)
 	assert.Equal(t, 3, len(newOrders))
 	assert.Equal(t, 11.0, lifetime)
 
-	object, filters, lifetime, newOrders, param, err = GetFilterAndObject(flattenOrders, nil, NewLedCanvasParam())
+	object, filters, lifetime, newOrders, _, err = GetFilterAndObject(flattenOrders, nil, NewLedCanvasParam())
 	assert.Nil(t, err)
 	assert.NotNil(t, object)
 	assert.NotNil(t, filters)
@@ -221,7 +221,7 @@ func TestGetFilterAndObjectErrorCase1(t *testing.T) {
 	arrayOrders, _ := getOrdersFromJson(orders)
 	flattenOrders, _ := flattenOrders(arrayOrders)
 
-	object, filters, lifetime, newOrders, param, err := GetFilterAndObject(flattenOrders, nil, NewLedCanvasParam())
+	object, filters, lifetime, newOrders, _, err := GetFilterAndObject(flattenOrders, nil, NewLedCanvasParam())
 	assert.NotNil(t, err)
 	assert.Nil(t, object)
 	assert.Nil(t, filters)

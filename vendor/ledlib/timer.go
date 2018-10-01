@@ -27,6 +27,10 @@ func (t *Timer) IsPast() bool {
 	return false
 }
 
+func (t *Timer) GetElapsed() time.Duration {
+	return time.Now().Sub(t.last_update)
+}
+
 func (t *Timer) GetPastCount() uint64 {
 	sub := time.Now().Sub(t.start)
 	return uint64(sub / t.interval)

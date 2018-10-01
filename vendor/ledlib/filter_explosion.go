@@ -5,6 +5,8 @@ import (
 	"math"
 	"math/rand"
 	"time"
+
+	"gonum.org/v1/gonum/mat"
 )
 
 type FilterExplosion struct {
@@ -47,7 +49,7 @@ func (f *FilterExplosion) getSpeed(x, y, z int) []float64 {
 	return f.speeds.GetAt(x, y, z).([]float64)
 }
 
-func (f *FilterExplosion) getCenter(x, y, z int) center {
+func (f *FilterExplosion) getCenter(x, y, z int) *center {
 	//	ctrl := 1
 	if f.centers.GetAt(x, y, z) == nil {
 		if f.dimension == 3 {
@@ -64,7 +66,7 @@ func (f *FilterExplosion) getCenter(x, y, z int) center {
 					rand.Float64()*2 - 2})
 		}
 	}
-	return f.centers.GetAt(x, y, z).(center)
+	return f.centers.GetAt(x, y, z).(*center)
 }
 
 func (f *FilterExplosion) Show(c util.Image3D, param LedCanvasParam) {
@@ -77,16 +79,26 @@ func (f *FilterExplosion) Show(c util.Image3D, param LedCanvasParam) {
 		//		f.add = (f.add + 1)
 	}
 	c.ConcurrentForEach(func(x, y, z int, c util.Color32) {
-		/*		cent := f.getCenter(x, y, z)
+		cent := f.getCenter(x, y, z)
+		if f.sin > 0 {
+			for _, speed := range f.getSpeed(x, y, z) {
+				pt := mat.NewDense(3, 1, []float64{
+					float64(x) - cent.x,
+					float64(y) - cent.y,
+					float64(z) - cent.z})
+				rate := mat.NewDense(1, 1, []float64{
+					f.sin * 3.5 * speed})
+				var result mat.Dense
+				result.Mul(pt, rate)
+				f.cube.SetAt(
+					util.RoundToInt(result.At(0, 0)+cent.x),
+					util.RoundToInt(result.At(1, 0)+cent.y),
+					util.RoundToInt(result.At(2, 0)+cent.z), c)
 
-				if f.sin > 0 {
-					for _, speed := f.getSpeed(x,y,z){
-
-					}
-				} else {
-
-				}
-		*/
+			}
+		} else {
+			f.cube.SetAt(x, y, z, c)
+		}
 	})
 	f.canvas.Show(f.cube, param)
 }

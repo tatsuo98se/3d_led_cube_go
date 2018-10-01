@@ -39,12 +39,20 @@ func CreateObject(order map[string]interface{}, ledCanvas LedCanvas) (interface{
 				return NewFilterRolling(ledCanvas), 0, nil
 			case "filter-skewed":
 				return NewFilterSkewed(ledCanvas), 0, nil
-			case "filter-snows":
-				return NewFilterSnows(ledCanvas), 0, nil
-			case "filter-mountain":
-				return NewFilterMountain(ledCanvas), 0, nil
-			case "filter-grass":
-				return NewFilterGrass(ledCanvas), 0, nil
+			case "filter-jump":
+				return NewFilterJump(ledCanvas), 0, nil
+			case "filter-bk-snows":
+				return NewFilterBkSnows(ledCanvas), 0, nil
+			case "filter-bk-mountain":
+				return NewFilterBkMountain(ledCanvas), 0, nil
+			case "filter-bk-grass":
+				return NewFilterBkGrass(ledCanvas), 0, nil
+			case "filter-bk-wave":
+				return NewFilterBkWave(ledCanvas), 0, nil
+			case "filter-explosion":
+				return NewFilterExplosion(ledCanvas, 2), 0, nil
+			case "filter-3d-explosion":
+				return NewFilterExplosion(ledCanvas, 3), 0, nil
 
 			default:
 				return nil, 0, errors.New("Unnown Object Id")
